@@ -24,10 +24,11 @@ namespace TraficoInteligenteEnTiempoReal
                 //    //new SensorVelocidad("SensorVelocidad1"),
                 //};
                 // Crear objetos de las clases
-                SensorTráfico sensorTráfico = new SensorTráfico("SensorPrincipal");
+                SensorTráfico sensorDeTráfico = new SensorTráfico("SensorPrincipal");
                 AlgoritmoAI algoritmoDeInteligenciaArtificial = new AlgoritmoAI();
                 SemaforosControl semaforosControl = new SemaforosControl(tiempoLuzRojaInicial: 30);
-                ControlTráfico centroDeControlDeTráfico = new ControlTráfico(sensorTráfico, semaforosControl);
+                List<SensorTráfico> listaDeSensores = new List<SensorTráfico> { sensorDeTráfico };
+                ControlTráfico centroDeControlDeTráfico = new ControlTráfico(sensorDeTráfico, listaDeSensores, semaforosControl);
 
                 // Escenario de simulación
                 SimularEscenario(centroDeControlDeTráfico, algoritmoDeInteligenciaArtificial, conductores);

@@ -10,19 +10,19 @@ namespace TraficoInteligenteEnTiempoReal
         private readonly SemaforosControl semaforosControl;
         //private List<Interfaces.ISensor> listaDeSensores;
 
-        public ControlTráfico(SensorTráfico sensorDeTráfico,/* List<SensorTráfico> sensores,*/ SemaforosControl semaforosControl)
+        public ControlTráfico(SensorTráfico sensorDeTráfico, List<SensorTráfico> sensores, SemaforosControl semaforosControl)
         {
             this.sensores = sensores ?? throw new ArgumentNullException(nameof(sensores), "La lista de sensores no puede ser nula.");
             this.sensorDeTráfico = sensorDeTráfico ?? throw new ArgumentNullException(nameof(sensorDeTráfico), "El sensor de tráfico no puede ser nulo.");
             this.semaforosControl = semaforosControl;
         }
 
-        public ControlTráfico(SensorTráfico sensorDeTráfico, /*List<Interfaces.ISensor> listaDeSensores,*/ SemaforosControl semaforosControl)
-        {
-            this.sensorDeTráfico = sensorDeTráfico;
-            //this.listaDeSensores = listaDeSensores;
-            this.semaforosControl = semaforosControl;
-        }
+        //public ControlTráfico(SensorTráfico sensorDeTráfico, /*List<Interfaces.ISensor> listaDeSensores,*/ SemaforosControl semaforosControl)
+        //{
+        //    this.sensorDeTráfico = sensorDeTráfico;
+        //    //this.listaDeSensores = listaDeSensores;
+        //    this.semaforosControl = semaforosControl;
+        //}
 
         // Método para recopilar datos de tráfico
         public void RecopilarDatosDeTráfico()
