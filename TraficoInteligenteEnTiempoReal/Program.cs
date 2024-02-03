@@ -18,12 +18,7 @@ namespace TraficoInteligenteEnTiempoReal
                     new Motocicleta("Motocicleta1", 25, true),
                     new Carro("Carro1", 35, true),
                 };
-                //List<ISensor> listaDeSensores = new List<ISensor>
-                //{
-                //    new SensorTráfico("SensorPrincipal"),
-                //    //new SensorVelocidad("SensorVelocidad1"),
-                //};
-                // Crear objetos de las clases
+                
                 SensorTráfico sensorDeTráfico = new SensorTráfico("SensorPrincipal");
                 AlgoritmoAI algoritmoDeInteligenciaArtificial = new AlgoritmoAI();
                 SemaforosControl semaforosControl = new SemaforosControl(tiempoLuzRojaInicial: 30);
@@ -49,7 +44,7 @@ namespace TraficoInteligenteEnTiempoReal
                 foreach (var conductor in conductores)
                 {
                     // Iniciar el viaje del conductor
-                    Console.WriteLine("Iniciando viaje del conductor...");
+                    Console.WriteLine("Se dectecto un conductor...");
                     conductor.IniciarViaje();
 
                     // Resto del código para cada conductor...
@@ -78,7 +73,6 @@ namespace TraficoInteligenteEnTiempoReal
 
                 Console.WriteLine($"Fin del escenario {i + 1}\n");
 
-                // Esperar 5 segundos entre escenarios (ajusta según tus necesidades)
                 Thread.Sleep(5000);
             }
         }
