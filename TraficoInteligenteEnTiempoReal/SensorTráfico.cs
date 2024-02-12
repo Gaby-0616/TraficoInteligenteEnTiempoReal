@@ -6,18 +6,30 @@ namespace TraficoInteligenteEnTiempoReal
 {
     internal class SensorTráfico /*: ISensor*/
     {
-        public string Id { get; private set; }
-        public string Nombre { get; }
-        public bool Funcionando { get; private set; }
-        //private readonly ISensor sensorPrincipal;
-        //private readonly List<ISensor> listaDeSensores;
-        //private readonly SemaforosControl semaforosControl;
+        private int v1;
+        private string v2;
+        private int v3;
+        private string v4;
 
-        public SensorTráfico(string nombre)
+        public int Id { get; private set; }
+        //public string Nombre { get; }
+        public bool Funcionando { get; private set; }
+        public string Tipo { get; set; }
+        public int Velocidad { get; set; }
+        public string Dirección { get; set; }
+
+        public SensorTráfico(int id, string tipo, int velocidad, string dirección /*string nombre*/)
         {
             Funcionando = true;
-            Nombre = nombre;
+            //Nombre = nombre;
+            Id = id;
+            Tipo = tipo;
+            Velocidad = velocidad;
+            Dirección = dirección;
         }
+
+      
+
         //public  Vehículo DetectarVehículo()
         //{
         //    // En esta lógica simulada, se genera una lista de vehículos detectados
@@ -54,18 +66,26 @@ namespace TraficoInteligenteEnTiempoReal
         public void DesactivarSensor()
         {
             Funcionando = false;
-            Console.WriteLine($"Sensor {Nombre}: Desactivado.");
+            Console.WriteLine($"Sensor {Tipo}: Desactivado.");
         }
+
+        //public static DatosTrafico ObtenerDatosTrafico()
+        //{
+        //    // ...
+        //    return new DatosTrafico(100, "Norte");
+        //}
 
         public class DatosTrafico
         {
             public int CantidadVehiculos { get; }
             public int CantidadPeatones { get; }
+            public string DireccionPredominante { get; set; }
 
-            public DatosTrafico(int cantidadVehiculos, int cantidadPeatones)
+            public DatosTrafico(int cantidadVehiculos, int cantidadPeatones /*string direccionPredominante*/)
             {
                 CantidadVehiculos = cantidadVehiculos;
                 CantidadPeatones = cantidadPeatones;
+                //DireccionPredominante = direccionPredominante;
             }
 
 

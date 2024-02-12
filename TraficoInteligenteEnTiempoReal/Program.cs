@@ -18,13 +18,19 @@ namespace TraficoInteligenteEnTiempoReal
                     new Motocicleta("Motocicleta1", 25, true),
                     new Carro("Carro1", 35, true),
                 };
-                
-                SensorTráfico sensorDeTráfico = new SensorTráfico("SensorPrincipal");
+
+
+                var sensorDeTráfico1 = new SensorTráfico(1, "Radar", 50, "Norte");
+                var sensorDeTráfico2 = new SensorTráfico(2, "Cámara", 60, "Sur");
+
+                List<SensorTráfico> listaDeSensores = new List<SensorTráfico> { sensorDeTráfico1, sensorDeTráfico2 };
+                SensorTráfico sensorDeTráfico = new SensorTráfico(1, "Radar", 50, "Norte");
                 AlgoritmoAI algoritmoDeInteligenciaArtificial = new AlgoritmoAI();
-                SemaforosControl semaforosControl = new SemaforosControl(tiempoLuzRojaInicial: 30);
-                List<SensorTráfico> listaDeSensores = new List<SensorTráfico> { sensorDeTráfico };
+                SemaforosControl semaforosControl = new SemaforosControl(1, "Verde", 30, 10);
+                //List<SensorTráfico> listaDeSensores = new List<SensorTráfico> { sensorDeTráfico };
                 ControlTráfico centroDeControlDeTráfico = new ControlTráfico(sensorDeTráfico, listaDeSensores, semaforosControl);
 
+                centroDeControlDeTráfico.IniciarHebraConsumidora();
                 // Escenario de simulación
                 SimularEscenario(centroDeControlDeTráfico, algoritmoDeInteligenciaArtificial, conductores);
 
@@ -43,11 +49,12 @@ namespace TraficoInteligenteEnTiempoReal
 
                 foreach (var conductor in conductores)
                 {
+                    
                     // Iniciar el viaje del conductor
                     Console.WriteLine("Se dectecto un conductor...");
                     conductor.IniciarViaje();
 
-                    // Resto del código para cada conductor...
+                    var tipoVehiculo = conductor.GetType().Name;
                 }
 
                 // Recopilar datos de tráfico

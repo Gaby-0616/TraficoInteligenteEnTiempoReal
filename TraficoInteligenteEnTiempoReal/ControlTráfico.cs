@@ -8,7 +8,9 @@ namespace TraficoInteligenteEnTiempoReal
         private readonly SensorTráfico sensorDeTráfico;
         private readonly List<SensorTráfico> sensores;
         private readonly SemaforosControl semaforosControl;
-        //private List<Interfaces.ISensor> listaDeSensores;
+        private readonly Semaphore _consumePeticion = new Semaphore(0, 1);
+        private readonly object _mutex = new object();
+        private static Queue<PeticionSemaforo> _peticiones = new Queue<PeticionSemaforo>();
 
         public ControlTráfico(SensorTráfico sensorDeTráfico, List<SensorTráfico> sensores, SemaforosControl semaforosControl)
         {
@@ -17,12 +19,7 @@ namespace TraficoInteligenteEnTiempoReal
             this.semaforosControl = semaforosControl;
         }
 
-        //public ControlTráfico(SensorTráfico sensorDeTráfico, /*List<Interfaces.ISensor> listaDeSensores,*/ SemaforosControl semaforosControl)
-        //{
-        //    this.sensorDeTráfico = sensorDeTráfico;
-        //    //this.listaDeSensores = listaDeSensores;
-        //    this.semaforosControl = semaforosControl;
-        //}
+    
 
         // Método para recopilar datos de tráfico
         public void RecopilarDatosDeTráfico()
@@ -73,25 +70,75 @@ namespace TraficoInteligenteEnTiempoReal
 
         private void ProcesarDatos(DatosTrafico datos)
         {
+            
             Console.WriteLine("Procesando datos de tráfico...");
-            // Lógica para procesar los datos recopilados
-            // Puedes almacenarlos en una base de datos, generar informes, etc.
+            var peticion = new PeticionSemaforo(
+               semaforosControl.Id,
+                 CalcularNuevoEstado(datos.CantidadVehiculos, datos.CantidadPeatones)
+           );
+
+            lock (_mutex)
+            {
+                _peticiones.Enqueue(peticion);
+            }
+
+            _consumePeticion.Release();
         }
 
         private void ReducirTiempoLuzRoja()
         {
-            // Lógica para reducir el tiempo de la luz roja
-            // Puedes ajustar la lógica según la implementación específica del controlador de semáforos
-            // Por ejemplo, puedes enviar comandos a los semáforos para ajustar dinámicamente los tiempos
+           
             semaforosControl.ReducirTiempoLuzRoja();
+            Console.WriteLine("Tiempo de luz roja reducido.");
         }
 
         private void AumentarTiempoLuzRoja()
         {
-            // Lógica para aumentar el tiempo de la luz roja
-            // Puedes ajustar la lógica según la implementación específica del controlador de semáforos
-            // Por ejemplo, puedes enviar comandos a los semáforos para ajustar dinámicamente los tiempos
+            
             semaforosControl.AumentarTiempoLuzRoja();
+            Console.WriteLine("Tiempo de luz roja aumentado.");
         }
+
+        private string CalcularNuevoEstado(int cantidadVehiculos, int direccionPredominante)
+        {
+            string tipoConductor = null;
+            if (cantidadVehiculos > 10 && direccionPredominante > 10)
+            {
+                return "Rojo";
+            }
+            else if (tipoConductor == "Autobús")
+            {
+                return "Verde";
+            }
+            else
+            {
+                return "Amarillo";
+            }
+        }
+        public void IniciarHebraConsumidora()
+        {
+            var hebraConsumidora = new Thread(HebraConsumidora);
+            hebraConsumidora.Start();
+        }
+
+        private void HebraConsumidora()
+        {
+            while (true)
+            {
+                _consumePeticion.WaitOne();
+
+                lock (_mutex)
+                {
+                    if (_peticiones.Count > 0)
+                    {
+                        var peticion = _peticiones.Dequeue();
+                        semaforosControl.ActualizarEstadoSemaforo(peticion.IdSemaforo, peticion.NuevoEstado, peticion.TipoVehiculo);
+
+                        Console.WriteLine($"Estado del semáforo {peticion.IdSemaforo} actualizado a {peticion.NuevoEstado} para {peticion.TipoVehiculo}.");
+                    }
+                }
+            }
+        }
+
     }
 }
