@@ -4,12 +4,9 @@ using TraficoInteligenteEnTiempoReal.Vehiculos;
 
 namespace TraficoInteligenteEnTiempoReal
 {
-    internal class SensorTráfico /*: ISensor*/
+    internal class SensorTráfico 
     {
-        private int v1;
-        private string v2;
-        private int v3;
-        private string v4;
+       
 
         public int Id { get; private set; }
         //public string Nombre { get; }
@@ -30,29 +27,12 @@ namespace TraficoInteligenteEnTiempoReal
 
       
 
-        //public  Vehículo DetectarVehículo()
-        //{
-        //    // En esta lógica simulada, se genera una lista de vehículos detectados
-        //    List<Vehículo> vehículosDetectados = GenerarVehículosAleatorios();
-
-        //    // Mostrar información sobre los vehículos detectados
-        //    Console.WriteLine($"Sensor de tráfico {Nombre}: Detección de vehículos en progreso...");
-        //    foreach (var vehículo in vehículosDetectados)
-        //    {
-        //        Console.WriteLine($"Vehículo detectado - Tipo: {vehículo.tipo}, Velocidad: {vehículo.velocidad}, Dirección: {vehículo.dirección}");
-        //    }
-        //    Console.WriteLine($"Sensor de tráfico {Nombre}: ¡Vehículos detectados correctamente!");
-
-
-        //}
-
+       
         public Vehículo DetectarVehículo()
         {
             var vehiculo = new Vehículo(velocidad: 100, tipo: "Coche", dirección: "Norte");
             if (Funcionando)
             {
-
-
 
                 Console.WriteLine($"Sensor {Id}: ¡Vehículo {vehiculo.tipo} detectado en la vía! (Velocidad: {vehiculo.velocidad}, Dirección: {vehiculo.dirección})");
             }
@@ -69,11 +49,7 @@ namespace TraficoInteligenteEnTiempoReal
             Console.WriteLine($"Sensor {Tipo}: Desactivado.");
         }
 
-        //public static DatosTrafico ObtenerDatosTrafico()
-        //{
-        //    // ...
-        //    return new DatosTrafico(100, "Norte");
-        //}
+       
 
         public class DatosTrafico
         {
@@ -94,16 +70,12 @@ namespace TraficoInteligenteEnTiempoReal
         }
         public static DatosTrafico ObtenerDatosTrafico()
         {
-            // Lógica para simular la obtención de datos de tráfico
-            // En un entorno real, esta lógica dependerá de cómo se integran tus sensores con el sistema
-            // y cómo obtienen y estructuran los datos de tráfico.
-
-            // En este ejemplo, se genera aleatoriamente una cantidad de vehículos y peatones.
+           
             Random random = new Random();
             int cantidadVehiculos = random.Next(0, 50);
             int cantidadPeatones = random.Next(0, 10);
 
-            // Se crea y devuelve una instancia de la clase DatosTrafico con los datos generados.
+            
             return new DatosTrafico(cantidadVehiculos, cantidadPeatones);
         }
 

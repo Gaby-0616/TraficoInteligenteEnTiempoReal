@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using static TraficoInteligenteEnTiempoReal.SensorTráfico;
 
 namespace TraficoInteligenteEnTiempoReal
@@ -24,6 +25,7 @@ namespace TraficoInteligenteEnTiempoReal
         // Método para recopilar datos de tráfico
         public void RecopilarDatosDeTráfico()
         {
+            
             Console.WriteLine("Iniciando recopilación de datos de tráfico...");
 
             foreach (var sensor in sensores)
@@ -32,20 +34,38 @@ namespace TraficoInteligenteEnTiempoReal
                 var datos = SensorTráfico.ObtenerDatosTrafico();
                 // Lógica para procesar los datos recopilados, por ejemplo, almacenarlos en una base de datos central
                 ProcesarDatos(datos);
+
+                
             }
 
             Console.WriteLine("Recopilación de datos de tráfico completada.");
         }
+
+
 
         // Método para optimizar los tiempos de semáforos basándose en los datos de tráfico
         public void OptimizarTiempoSemaforo()
         {
             Console.WriteLine("Optimizando los tiempos de los semáforos basándose en los datos de tráfico...");
 
+            //var semaforo = new Semaforo(); // Se crea una instancia de la clase Semaforo
+
             int totalVehiculos = 0;
+            int totalPeatones = 0;
             foreach (var sensor in sensores)
             {
                 totalVehiculos += SensorTráfico.ObtenerDatosTrafico().CantidadVehiculos;
+                totalPeatones += SensorTráfico.ObtenerDatosTrafico().CantidadPeatones;
+            }
+
+            if (totalPeatones > 10 && totalVehiculos < 10)
+            {
+                semaforosControl.CambiarColorSemaforo("Verde");
+                semaforosControl.CambiarEstadoRojo();
+            }
+            else
+            {
+                semaforosControl.CambiarColorSemaforo("Rojo");
             }
 
             if (totalVehiculos < 10)
@@ -99,10 +119,10 @@ namespace TraficoInteligenteEnTiempoReal
             Console.WriteLine("Tiempo de luz roja aumentado.");
         }
 
-        private string CalcularNuevoEstado(int cantidadVehiculos, int direccionPredominante)
+        private string CalcularNuevoEstado(int cantidadVehiculos, int cantidadPeatones)
         {
             string tipoConductor = null;
-            if (cantidadVehiculos > 10 && direccionPredominante > 10)
+            if (cantidadVehiculos > 10 && cantidadPeatones > 10)
             {
                 return "Rojo";
             }
@@ -122,7 +142,7 @@ namespace TraficoInteligenteEnTiempoReal
         }
 
         private void HebraConsumidora()
-        {
+        {   
             while (true)
             {
                 _consumePeticion.WaitOne();
@@ -132,11 +152,14 @@ namespace TraficoInteligenteEnTiempoReal
                     if (_peticiones.Count > 0)
                     {
                         var peticion = _peticiones.Dequeue();
-                        semaforosControl.ActualizarEstadoSemaforo(peticion.IdSemaforo, peticion.NuevoEstado, peticion.TipoVehiculo);
 
-                        Console.WriteLine($"Estado del semáforo {peticion.IdSemaforo} actualizado a {peticion.NuevoEstado} para {peticion.TipoVehiculo}.");
+                        semaforosControl.ActualizarEstadoSemaforo(peticion.IdSemaforo, "Verde", "Autobús");
+
+                        Console.WriteLine($"Estado del semáforo {peticion.IdSemaforo} actualizado a {"Verde"} para {"Autobús"}.");
                     }
                 }
+
+                
             }
         }
 

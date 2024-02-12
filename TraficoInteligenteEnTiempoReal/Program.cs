@@ -43,7 +43,7 @@ namespace TraficoInteligenteEnTiempoReal
 
         private static void SimularEscenario(ControlTráfico centroDeControlDeTráfico, AlgoritmoAI algoritmoDeInteligenciaArtificial, List<Conductor> conductores)
         {
-            for (int i = 0; i < 5; i++) // Simula 5 escenarios diferentes
+            for (int i = 0; i < 30; i++) // Simula 5 escenarios diferentes
             {
                 Console.WriteLine($"Inicio del escenario {i + 1}");
 

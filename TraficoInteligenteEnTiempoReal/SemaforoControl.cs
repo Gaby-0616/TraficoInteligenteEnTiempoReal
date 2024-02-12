@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,13 @@ namespace TraficoInteligenteEnTiempoReal
                 TiempoLuzVerde -= 5;
             }
         }
+        public void CambiarColorSemaforo( string color)
+        {
+            // Implementar lógica para cambiar el color del semáforo
+            // ...
 
+            Console.WriteLine($"Se ha cambiado el color del semáforo a {color}.");
+        }
 
         public void ReducirTiempoLuzRoja()
         {
@@ -59,5 +66,30 @@ namespace TraficoInteligenteEnTiempoReal
 
             Console.WriteLine($"Nuevo tiempo de la luz roja: {TiempoLuzRoja} segundos");
         }
+
+        public void CambiarEstadoVerde()
+        {
+            Console.WriteLine($"Se ha cambiado el color del semáforo a Verde.");
+        }
+
+        public void CambiarEstadoRojo()
+        {
+            // Implementar lógica para cambiar el estado del semáforo a rojo
+            // ...
+        }
+
+        public void CambiarEstadoAmarillo()
+        {
+            // Implementar lógica para cambiar el estado del semáforo a amarillo
+            // ...
+        }
+
+        public enum TipoVehiculo
+{
+    Autobús,
+    Motocicleta,
+    Coche,
+    Camión
+}
     }
 }
