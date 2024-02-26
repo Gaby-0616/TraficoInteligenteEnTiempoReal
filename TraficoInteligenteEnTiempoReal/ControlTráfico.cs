@@ -20,22 +20,26 @@ namespace TraficoInteligenteEnTiempoReal
             this.semaforosControl = semaforosControl;
         }
 
-    
+
 
         // Método para recopilar datos de tráfico
         public void RecopilarDatosDeTráfico()
         {
-            
+
             Console.WriteLine("Iniciando recopilación de datos de tráfico...");
 
             foreach (var sensor in sensores)
             {
                 var alerta = sensorDeTráfico.DetectarVehículo;
-                var datos = SensorTráfico.ObtenerDatosTrafico();
-                // Lógica para procesar los datos recopilados, por ejemplo, almacenarlos en una base de datos central
-                ProcesarDatos(datos);
-
-                
+                try
+                {
+                    var datos = SensorTráfico.ObtenerDatosTrafico();
+                    ProcesarDatos(datos);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener datos del sensor: {ex.Message}");
+                }
             }
 
             Console.WriteLine("Recopilación de datos de tráfico completada.");
@@ -48,41 +52,44 @@ namespace TraficoInteligenteEnTiempoReal
         {
             Console.WriteLine("Optimizando los tiempos de los semáforos basándose en los datos de tráfico...");
 
-            //var semaforo = new Semaforo(); // Se crea una instancia de la clase Semaforo
+            try
+            {
+                int totalVehiculos = 0;
+                int totalPeatones = 0;
+                foreach (var sensor in sensores)
+                {
+                    totalVehiculos += SensorTráfico.ObtenerDatosTrafico().CantidadVehiculos;
+                    totalPeatones += SensorTráfico.ObtenerDatosTrafico().CantidadPeatones;
+                }
 
-            int totalVehiculos = 0;
-            int totalPeatones = 0;
-            foreach (var sensor in sensores)
-            {
-                totalVehiculos += SensorTráfico.ObtenerDatosTrafico().CantidadVehiculos;
-                totalPeatones += SensorTráfico.ObtenerDatosTrafico().CantidadPeatones;
-            }
+                if (totalPeatones > 10 && totalVehiculos < 10)
+                {
+                    semaforosControl.CambiarColorSemaforo("Verde");
+                    semaforosControl.CambiarEstadoRojo();
+                }
+                else
+                {
+                    semaforosControl.CambiarColorSemaforo("Rojo");
+                }
 
-            if (totalPeatones > 10 && totalVehiculos < 10)
-            {
-                semaforosControl.CambiarColorSemaforo("Verde");
-                semaforosControl.CambiarEstadoRojo();
-            }
-            else
-            {
-                semaforosControl.CambiarColorSemaforo("Rojo");
-            }
+                if (totalVehiculos < 10)
+                {
 
-            if (totalVehiculos < 10)
-            {
-                // Tráfico bajo: reducimos el tiempo de luz roja
-                Console.WriteLine("Tráfico bajo. Reduciendo tiempo de luz roja.");
-                ReducirTiempoLuzRoja();
+                    Console.WriteLine("Tráfico bajo. Reduciendo tiempo de luz roja.");
+                    ReducirTiempoLuzRoja();
+                }
+                else
+                {
+                    Console.WriteLine("Tráfico alto. Aumentando tiempo de luz roja.");
+                    AumentarTiempoLuzRoja();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Tráfico alto: aumentamos el tiempo de luz roja
-                Console.WriteLine("Tráfico alto. Aumentando tiempo de luz roja.");
-                AumentarTiempoLuzRoja();
+                Console.WriteLine($"Error al optimizar los tiempos de los semáforos: {ex.Message}");
             }
         }
 
-        // Método para enviar tiempos optimizados a los semáforos
         public void EnviarTiemposOptimizadosALosSemáforos()
         {
             Console.WriteLine("Enviando tiempos optimizados a los semáforos...");
@@ -90,31 +97,44 @@ namespace TraficoInteligenteEnTiempoReal
 
         private void ProcesarDatos(DatosTrafico datos)
         {
-            
-            Console.WriteLine("Procesando datos de tráfico...");
-            var peticion = new PeticionSemaforo(
-               semaforosControl.Id,
-                 CalcularNuevoEstado(datos.CantidadVehiculos, datos.CantidadPeatones)
-           );
-
-            lock (_mutex)
+            if (datos == null)
             {
-                _peticiones.Enqueue(peticion);
+                throw new ArgumentNullException(nameof(datos), "El objeto datos no puede ser nulo.");
+            }
+
+            Console.WriteLine("Procesando datos de tráfico...");
+
+            try
+            {
+                var peticion = new PeticionSemaforo(
+                semaforosControl.Id,
+                CalcularNuevoEstado(datos.CantidadVehiculos, datos.CantidadPeatones)
+                );
+
+                lock (_mutex)
+                {
+                    _peticiones.Enqueue(peticion);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al procesar datos de tráfico: {ex.Message}");
             }
 
             _consumePeticion.Release();
         }
 
+
         private void ReducirTiempoLuzRoja()
         {
-           
+
             semaforosControl.ReducirTiempoLuzRoja();
             Console.WriteLine("Tiempo de luz roja reducido.");
         }
 
         private void AumentarTiempoLuzRoja()
         {
-            
+
             semaforosControl.AumentarTiempoLuzRoja();
             Console.WriteLine("Tiempo de luz roja aumentado.");
         }
@@ -142,26 +162,45 @@ namespace TraficoInteligenteEnTiempoReal
         }
 
         private void HebraConsumidora()
-        {   
+        {
             while (true)
             {
-                _consumePeticion.WaitOne();
+                try
+                {
+                    _consumePeticion.WaitOne();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al esperar la señal del semáforo: {ex.Message}");
+                }
 
                 lock (_mutex)
                 {
-                    if (_peticiones.Count > 0)
+                    try
                     {
-                        var peticion = _peticiones.Dequeue();
+                        if (_peticiones.Count > 0)
+                        {
+                            var peticion = _peticiones.Dequeue();
 
-                        semaforosControl.ActualizarEstadoSemaforo(peticion.IdSemaforo, "Verde", "Autobús");
-
-                        Console.WriteLine($"Estado del semáforo {peticion.IdSemaforo} actualizado a {"Verde"} para {"Autobús"}.");
+                            try
+                            {
+                                semaforosControl.ActualizarEstadoSemaforo(peticion.IdSemaforo, "Verde", "Autobús");
+                                Console.WriteLine($"Estado del semáforo {peticion.IdSemaforo} actualizado a {"Verde"} para {"Autobús"}.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error al actualizar el estado del semáforo: {ex.Message}");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al acceder a la cola de peticiones: {ex.Message}");
                     }
                 }
-
-                
             }
         }
+
 
     }
 }
