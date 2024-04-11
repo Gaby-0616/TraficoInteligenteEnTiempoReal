@@ -34,7 +34,7 @@ Visual Studio: Entorno de desarrollo integrado (IDE) utilizado para compilar y e
 Configuración del Proyecto
 Para configurar el proyecto, siga estos pasos:
 
-Clone el repositorio desde GitHub: git clone https://github.com/tu_usuario/tu_proyecto.git.
+Clone el repositorio desde GitHub: git clone [https://github.com/tu_usuario/tu_proyecto.git.](https://github.com/Gaby-0616/TraficoInteligenteEnTiempoReal.git)
 
 Abra la solución del proyecto en Visual Studio.
 
@@ -53,10 +53,6 @@ Envíe una solicitud de extracción (pull request) con una descripción clara de
 
 Los cambios serán revisados y fusionados en el proyecto principal una vez aprobados.
 
-Licencia
-Este proyecto está licenciado bajo la Licencia MIT. Consulte el archivo LICENSE para obtener más información.
 
-Contacto
-Para cualquier consulta o pregunta sobre el proyecto, no dude en ponerse en contacto con el equipo de desarrollo a través de correo electrónico o crear un problema en GitHub.
 
 ¡Gracias por contribuir al proyecto!
