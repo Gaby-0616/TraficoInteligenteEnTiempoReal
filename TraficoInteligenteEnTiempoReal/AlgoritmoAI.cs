@@ -30,10 +30,25 @@ namespace TraficoInteligenteEnTiempoReal
             // Lógica avanzada para ajustar dinámicamente los tiempos de los semáforos
             // basándose en factores como el flujo de tráfico, condiciones meteorológicas y eventos especiales
 
-            foreach (var factor in factoresOptimizacion)
+            try
             {
-                Console.WriteLine($"Aplicando factor de optimización '{factor.Key}' con peso {factor.Value}...");
-                // Lógica específica para ajustar tiempos de semáforos según cada factor
+
+
+                foreach (var factor in factoresOptimizacion)
+                {
+                    Console.WriteLine($"Aplicando factor de optimización '{factor.Key}' con peso {factor.Value}...");
+                    // Lógica específica para ajustar tiempos de semáforos según cada factor
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                // Registrar el error y notificar al usuario o sistema
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inesperado al optimizar tiempos de semáforo: {ex.Message}");
+                // Registrar el error y tomar medidas de recuperación adecuadas
             }
 
             Console.WriteLine("Optimización de semáforos completada.");
@@ -47,21 +62,30 @@ namespace TraficoInteligenteEnTiempoReal
             // como cámaras de seguridad, sensores de tráfico, análisis de comportamiento, etc.
 
             // Ejemplo simple que devuelve true aleatoriamente para fines demostrativos
-            Random random = new Random();
-            bool situacionDeRiesgo = random.Next(2) == 1;
-
-            if (situacionDeRiesgo)
+            try
             {
-                Console.WriteLine("¡Se ha detectado una situación de riesgo!");
+                Random random = new Random();
+                bool situacionDeRiesgo = random.Next(2) == 1;
+
+                if (situacionDeRiesgo)
+                {
+                    Console.WriteLine("¡Se ha detectado una situación de riesgo!");
+                }
+                else
+                {
+                    Console.WriteLine("No se ha detectado ninguna situación de riesgo.");
+                }
+
+                return situacionDeRiesgo;
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("No se ha detectado ninguna situación de riesgo.");
+                Console.WriteLine($"Error al analizar situación de riesgo: {ex.Message}");
+                return false; // Indicar error en la detección de riesgo
             }
 
-            return situacionDeRiesgo;
+           
         }
 
-        // Otros métodos y propiedades relevantes para el algoritmo de inteligencia artificial
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Drawing;
 using static TraficoInteligenteEnTiempoReal.SensorTráfico;
 
@@ -12,14 +13,40 @@ namespace TraficoInteligenteEnTiempoReal
         private readonly Semaphore _consumePeticion = new Semaphore(0, 1);
         private readonly object _mutex = new object();
         private static Queue<PeticionSemaforo> _peticiones = new Queue<PeticionSemaforo>();
-
+        private readonly BlockingCollection<PeticionSemaforo> _colaPeticiones = new BlockingCollection<PeticionSemaforo>();
+        private Thread _hiloProcesamientoDatos;
         public ControlTráfico(SensorTráfico sensorDeTráfico, List<SensorTráfico> sensores, SemaforosControl semaforosControl)
         {
             this.sensores = sensores ?? throw new ArgumentNullException(nameof(sensores), "La lista de sensores no puede ser nula.");
             this.sensorDeTráfico = sensorDeTráfico ?? throw new ArgumentNullException(nameof(sensorDeTráfico), "El sensor de tráfico no puede ser nulo.");
             this.semaforosControl = semaforosControl;
+            _hiloProcesamientoDatos = new Thread(() => ProcesarDatosDeSensores());
+            _hiloProcesamientoDatos.Start();
         }
 
+        private void ProcesarDatosDeSensores()
+        {
+            while (true)
+            {
+                try
+                {
+                    var alerta = sensorDeTráfico.DetectarVehículo;
+                    var datos = SensorTráfico.ObtenerDatosTrafico();
+
+                    // Procesar datos y obtener estado del semáforo
+                    // ...
+
+                    var peticion = new PeticionSemaforo(
+                 semaforosControl.Id,
+                 CalcularNuevoEstado(datos.CantidadVehiculos, datos.CantidadPeatones)
+                 );
+                }
+                catch (Exception ex)
+                {
+                    // ... (manejar errores)
+                }
+            }
+        }
 
 
         // Método para recopilar datos de tráfico
@@ -110,7 +137,8 @@ namespace TraficoInteligenteEnTiempoReal
                 semaforosControl.Id,
                 CalcularNuevoEstado(datos.CantidadVehiculos, datos.CantidadPeatones)
                 );
-
+                _colaPeticiones.Add(peticion);
+                _eventoPeticion.Set(); // Señalar nueva petición
                 lock (_mutex)
                 {
                     _peticiones.Enqueue(peticion);
@@ -161,13 +189,14 @@ namespace TraficoInteligenteEnTiempoReal
             hebraConsumidora.Start();
         }
 
+        private readonly AutoResetEvent _eventoPeticion = new AutoResetEvent(false);
         private void HebraConsumidora()
         {
             while (true)
             {
                 try
                 {
-                    _consumePeticion.WaitOne();
+                    _eventoPeticion.WaitOne();
                 }
                 catch (Exception ex)
                 {
